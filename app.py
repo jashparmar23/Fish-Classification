@@ -5,13 +5,13 @@ from PIL import Image
 import os
 
 # -----------------------
-# CONFIG (use relative paths!)
+# CONFIG
 # -----------------------
-MODEL_DIR = "models"
-DATASET_PATH = "images.cv_jzk6llhf18tm3k0kyttxz/data/test"
+MODEL_DIR = r"images.cv_jzk6llhf18tm3k0kyttxz\data\test\models"
+DATASET_PATH = r"images.cv_jzk6llhf18tm3k0kyttxz\data\test"
 IMG_SIZE = (224, 224)
 
-# Automatically detect class names from test dataset folders
+# Automatically detect class names from dataset folders
 CLASS_NAMES = sorted([d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))])
 
 # -----------------------
@@ -20,7 +20,9 @@ CLASS_NAMES = sorted([d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.pa
 @st.cache_resource
 def load_model_cached(model_path):
     """Load model from file."""
-    return tf.keras.models.load_model(model_path)
+    model = tf.keras.models.load_model(model_path)
+    st.write(f"Model loaded. Number of inputs: {len(model.inputs)}")
+    return model
 
 def preprocess_image(image: Image.Image):
     image = image.convert("RGB")
@@ -31,7 +33,14 @@ def preprocess_image(image: Image.Image):
 
 def predict(image, model):
     processed_img = preprocess_image(image)
-    predictions = model.predict(processed_img)
+    # If model expects multiple inputs, feed as list
+    if len(model.inputs) == 1:
+        predictions = model.predict(processed_img)
+    else:
+        # For multiple inputs (assuming 2 identical inputs here)
+        inputs = [processed_img] * len(model.inputs)
+        predictions = model.predict(inputs)
+
     predicted_class = CLASS_NAMES[np.argmax(predictions)]
     confidence_scores = {CLASS_NAMES[i]: float(predictions[0][i]) for i in range(len(CLASS_NAMES))}
     return predicted_class, confidence_scores
@@ -42,12 +51,8 @@ def predict(image, model):
 st.set_page_config(page_title="🐟 Fish Classifier", layout="centered")
 st.title("🐟 Fish Image Classifier")
 
-# Find all model files in the models folder
+# Find all model files
 MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
-
-if not MODEL_FILES:
-    st.error(f"No models found in '{MODEL_DIR}' folder. Please add your model files.")
-    st.stop()
 
 # -----------------------
 # MODEL SELECTION
@@ -95,4 +100,3 @@ elif mode == "📂 Browse Dataset":
             st.write(f"{cls}: {score:.2%}")
     else:
         st.warning("No images found in the dataset folder.")
-
