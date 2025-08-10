@@ -5,22 +5,28 @@ from PIL import Image
 import os
 
 # -----------------------
-# CONFIG
+# CONFIG - use relative paths for deployment!
 # -----------------------
-MODEL_DIR = "models"  # folder with your .h5 models
+MODEL_DIR = "models"
 DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "data", "test")
 IMG_SIZE = (224, 224)
 
+# Automatically detect class names from test dataset folders
 try:
-    CLASS_NAMES = sorted([d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))])
+    CLASS_NAMES = sorted(
+        [d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))]
+    )
 except FileNotFoundError:
-    st.error(f"Error: Dataset path '{DATASET_PATH}' not found.")
+    st.error(f"Dataset path '{DATASET_PATH}' not found. Check your folder structure.")
     st.stop()
 
+# -----------------------
+# HELPER FUNCTIONS
+# -----------------------
 @st.cache_resource
 def load_model_cached(model_path):
-    # Just load model normally
-    return tf.keras.models.load_model(model_path, compile=False)
+    """Load model from file."""
+    return tf.keras.models.load_model(model_path)
 
 def preprocess_image(image: Image.Image):
     image = image.convert("RGB")
@@ -42,18 +48,25 @@ def predict(image, model):
 st.set_page_config(page_title="🐟 Fish Classifier", layout="centered")
 st.title("🐟 Fish Image Classifier")
 
+# Find all model files
 try:
     MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
     if not MODEL_FILES:
-        st.error(f"No model files found in '{MODEL_DIR}' directory.")
+        st.error(f"No model files found in '{MODEL_DIR}'.")
         st.stop()
 except FileNotFoundError:
     st.error(f"Model directory '{MODEL_DIR}' not found.")
     st.stop()
 
+# -----------------------
+# MODEL SELECTION
+# -----------------------
 model_choice = st.selectbox("Select Model:", MODEL_FILES)
 model = load_model_cached(os.path.join(MODEL_DIR, model_choice))
 
+# -----------------------
+# MODE SELECTOR
+# -----------------------
 mode = st.radio("Choose Mode:", ["📤 Upload Image", "📂 Browse Dataset"])
 
 if mode == "📤 Upload Image":
