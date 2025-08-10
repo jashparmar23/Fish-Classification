@@ -5,20 +5,14 @@ from PIL import Image
 import os
 
 # -----------------------
-# CONFIG - use relative paths for deployment!
+# CONFIG (use relative paths!)
 # -----------------------
 MODEL_DIR = "models"
-DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "data", "test")
+DATASET_PATH = "images.cv_jzk6llhf18tm3k0kyttxz/data/test"
 IMG_SIZE = (224, 224)
 
 # Automatically detect class names from test dataset folders
-try:
-    CLASS_NAMES = sorted(
-        [d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))]
-    )
-except FileNotFoundError:
-    st.error(f"Dataset path '{DATASET_PATH}' not found. Check your folder structure.")
-    st.stop()
+CLASS_NAMES = sorted([d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))])
 
 # -----------------------
 # HELPER FUNCTIONS
@@ -48,14 +42,11 @@ def predict(image, model):
 st.set_page_config(page_title="🐟 Fish Classifier", layout="centered")
 st.title("🐟 Fish Image Classifier")
 
-# Find all model files
-try:
-    MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
-    if not MODEL_FILES:
-        st.error(f"No model files found in '{MODEL_DIR}'.")
-        st.stop()
-except FileNotFoundError:
-    st.error(f"Model directory '{MODEL_DIR}' not found.")
+# Find all model files in the models folder
+MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
+
+if not MODEL_FILES:
+    st.error(f"No models found in '{MODEL_DIR}' folder. Please add your model files.")
     st.stop()
 
 # -----------------------
@@ -104,3 +95,4 @@ elif mode == "📂 Browse Dataset":
             st.write(f"{cls}: {score:.2%}")
     else:
         st.warning("No images found in the dataset folder.")
+
