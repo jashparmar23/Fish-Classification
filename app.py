@@ -7,7 +7,7 @@ import os
 # -----------------------
 # CONFIG
 # -----------------------
-MODEL_DIR = r"images.cv_jzk6llhf18tm3k0kyttxz\data\test\models"
+MODEL_DIR = r"models"
 DATASET_PATH = r"images.cv_jzk6llhf18tm3k0kyttxz\data\test"
 IMG_SIZE = (224, 224)
 
