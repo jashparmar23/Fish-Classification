@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st 
 import tensorflow as tf
 import numpy as np
 from PIL import Image
@@ -7,8 +7,8 @@ import os
 # -----------------------
 # CONFIG
 # -----------------------
-MODEL_DIR = r"C:\Users\jashp\Downloads\Fish Classification\models"
-DATASET_PATH = r"C:\Users\jashp\Downloads\images.cv_jzk6llhf18tm3k0kyttxz\data\test"
+MODEL_DIR = "models"  # relative to repo root
+DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "test")
 IMG_SIZE = (224, 224)
 
 # Automatically detect class names from test dataset folders
