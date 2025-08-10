@@ -7,7 +7,7 @@ import os
 # -----------------------
 # CONFIG
 # -----------------------
-MODEL_DIR = "models"  # relative to repo root
+MODEL_DIR = "models/saved_model_format"  # point to SavedModel folder, NOT .h5
 DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "data", "test")
 IMG_SIZE = (224, 224)
 
@@ -23,11 +23,8 @@ except FileNotFoundError:
 # -----------------------
 @st.cache_resource
 def load_model_cached(model_path):
-    # Add your custom layers or functions here if needed, e.g.:
-    # from your_custom_module import CustomLayer
-    # custom_objects = {"CustomLayer": CustomLayer}
-    custom_objects = {}
-    return tf.keras.models.load_model(model_path, custom_objects=custom_objects)
+    # For SavedModel format, no need for custom_objects usually
+    return tf.keras.models.load_model(model_path)
 
 def preprocess_image(image: Image.Image):
     image = image.convert("RGB")
@@ -49,21 +46,12 @@ def predict(image, model):
 st.set_page_config(page_title="🐟 Fish Classifier", layout="centered")
 st.title("🐟 Fish Image Classifier")
 
-# Find all model files
+# Since SavedModel is a directory, no selection needed, just load
 try:
-    MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
-    if not MODEL_FILES:
-        st.error(f"No model files found in the '{MODEL_DIR}' directory.")
-        st.stop()
-except FileNotFoundError:
-    st.error(f"The model directory '{MODEL_DIR}' was not found. Please ensure it exists.")
+    model = load_model_cached(MODEL_DIR)
+except Exception as e:
+    st.error(f"Failed to load model from '{MODEL_DIR}': {e}")
     st.stop()
-
-# -----------------------
-# MODEL SELECTION
-# -----------------------
-model_choice = st.selectbox("Select Model:", MODEL_FILES)
-model = load_model_cached(os.path.join(MODEL_DIR, model_choice))
 
 # -----------------------
 # MODE SELECTOR
