@@ -23,7 +23,11 @@ except FileNotFoundError:
 # -----------------------
 @st.cache_resource
 def load_model_cached(model_path):
-    return tf.keras.models.load_model(model_path)
+    # Add your custom layers or functions here if needed, e.g.:
+    # from your_custom_module import CustomLayer
+    # custom_objects = {"CustomLayer": CustomLayer}
+    custom_objects = {}
+    return tf.keras.models.load_model(model_path, custom_objects=custom_objects)
 
 def preprocess_image(image: Image.Image):
     image = image.convert("RGB")
