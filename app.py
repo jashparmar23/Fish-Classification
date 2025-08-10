@@ -8,7 +8,7 @@ import os
 # CONFIG
 # -----------------------
 MODEL_DIR = "models"  # relative to repo root
-DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "test")
+DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "data", "test")
 IMG_SIZE = (224, 224)
 
 # Automatically detect class names from test dataset folders
