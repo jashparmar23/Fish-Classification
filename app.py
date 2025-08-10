@@ -6,7 +6,7 @@ import os
 
 # --- CONFIG ---
 MODEL_DIR = "models"
-MODEL_NAME = "your_model.h5"  # or SavedModel folder
+MODEL_NAME = "VGG16_fish.h5"  # or SavedModel folder
 MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 DATASET_PATH = "images.cv_jzk6llhf18tm3k0kyttxz/data/test"
 IMG_SIZE = (224, 224)
