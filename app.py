@@ -1,8 +1,9 @@
-import streamlit as st 
+import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
+from tensorflow.python.keras.saving import legacy_tf_keras_module
 
 # -----------------------
 # CONFIG
@@ -12,15 +13,21 @@ DATASET_PATH = os.path.join("images.cv_jzk6llhf18tm3k0kyttxz", "data", "test")
 IMG_SIZE = (224, 224)
 
 # Automatically detect class names from test dataset folders
-CLASS_NAMES = sorted([d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))])
+try:
+    CLASS_NAMES = sorted([d for d in os.listdir(DATASET_PATH) if os.path.isdir(os.path.join(DATASET_PATH, d))])
+except FileNotFoundError:
+    st.error(f"Error: The dataset path '{DATASET_PATH}' was not found. Please ensure your folder structure is correct.")
+    st.stop()
+
 
 # -----------------------
 # HELPER FUNCTIONS
 # -----------------------
 @st.cache_resource
 def load_model_cached(model_path):
-    """Load model from file."""
-    return tf.keras.models.load_model(model_path)
+    """Load model from file using the legacy Keras API."""
+    with legacy_tf_keras_module.with_legacy_get_custom_objects():
+        return tf.keras.models.load_model(model_path)
 
 def preprocess_image(image: Image.Image):
     image = image.convert("RGB")
@@ -43,7 +50,14 @@ st.set_page_config(page_title="🐟 Fish Classifier", layout="centered")
 st.title("🐟 Fish Image Classifier")
 
 # Find all model files
-MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
+try:
+    MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
+    if not MODEL_FILES:
+        st.error(f"No model files found in the '{MODEL_DIR}' directory.")
+        st.stop()
+except FileNotFoundError:
+    st.error(f"The model directory '{MODEL_DIR}' was not found. Please ensure it exists.")
+    st.stop()
 
 # -----------------------
 # MODEL SELECTION
