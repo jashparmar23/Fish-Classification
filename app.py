@@ -1,27 +1,26 @@
-import os
 import streamlit as st
-
-MODELS_DIR = "models_converted"
+import os
 
 def main():
     st.title("Fish Classification")
 
-    if not os.path.exists(MODELS_DIR):
-        st.error(f"Models directory '{MODELS_DIR}' does not exist!")
-        return
+    # Show current directory and contents for debugging
+    st.write("Current working directory:", os.getcwd())
+    st.write("Files in current directory:", os.listdir())
+    if os.path.exists("models_converted"):
+        st.write("Files in models_converted folder:", os.listdir("models_converted"))
+    else:
+        st.error("models_converted folder not found!")
 
-    model_names = [d for d in os.listdir(MODELS_DIR) if os.path.isdir(os.path.join(MODELS_DIR, d))]
-    st.write("Found models:", model_names)  # Debug print the models list
+    # Now you can continue with loading models from models_converted/
+    # For example:
+    models = os.listdir("models_converted") if os.path.exists("models_converted") else []
+    model_choice = st.selectbox("Choose your model", models)
 
-    if not model_names:
-        st.warning("No models found in the models_converted folder.")
-        return
-
-    model_choice = st.selectbox("Choose Model", model_names)
-
-    st.write(f"You selected: {model_choice}")  # Debug: show current selection
-
-    # ... rest of your loading and prediction code
+    if model_choice:
+        model_path = os.path.join("models_converted", model_choice)
+        st.write(f"Loading model: {model_path}")
+        # Add your model loading logic here
 
 if __name__ == "__main__":
     main()
