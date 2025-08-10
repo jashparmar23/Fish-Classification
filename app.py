@@ -3,7 +3,6 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
-from tensorflow.python.keras.saving import legacy_tf_keras_module
 
 # -----------------------
 # CONFIG
@@ -19,15 +18,12 @@ except FileNotFoundError:
     st.error(f"Error: The dataset path '{DATASET_PATH}' was not found. Please ensure your folder structure is correct.")
     st.stop()
 
-
 # -----------------------
 # HELPER FUNCTIONS
 # -----------------------
 @st.cache_resource
 def load_model_cached(model_path):
-    """Load model from file using the legacy Keras API."""
-    with legacy_tf_keras_module.with_legacy_get_custom_objects():
-        return tf.keras.models.load_model(model_path)
+    return tf.keras.models.load_model(model_path)
 
 def preprocess_image(image: Image.Image):
     image = image.convert("RGB")
