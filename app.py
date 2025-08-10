@@ -5,10 +5,10 @@ from PIL import Image
 import os
 
 # -----------------------
-# CONFIG
+# CONFIG (use relative paths)
 # -----------------------
-MODEL_DIR = r"models"
-DATASET_PATH = r"images.cv_jzk6llhf18tm3k0kyttxz\data\test"
+MODEL_DIR = "models"
+DATASET_PATH = "images.cv_jzk6llhf18tm3k0kyttxz/data/test"
 IMG_SIZE = (224, 224)
 
 # Automatically detect class names from dataset folders
@@ -37,7 +37,6 @@ def predict(image, model):
     if len(model.inputs) == 1:
         predictions = model.predict(processed_img)
     else:
-        # For multiple inputs (assuming 2 identical inputs here)
         inputs = [processed_img] * len(model.inputs)
         predictions = model.predict(inputs)
 
@@ -51,7 +50,7 @@ def predict(image, model):
 st.set_page_config(page_title="🐟 Fish Classifier", layout="centered")
 st.title("🐟 Fish Image Classifier")
 
-# Find all model files
+# Find all model files in relative model directory
 MODEL_FILES = [f for f in os.listdir(MODEL_DIR) if f.endswith((".h5", ".keras"))]
 
 # -----------------------
